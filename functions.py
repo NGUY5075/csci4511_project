@@ -34,7 +34,6 @@ def get_return(stock_df):
     daily_returns = stock_df['Close'].pct_change().dropna()
     avg_return = daily_returns.mean()
     return avg_return
-    # return globals()[stock]['Adj Close'].pct_change()
 
 def get_correlation(s1_df, s2_df):
     """
@@ -44,7 +43,6 @@ def get_correlation(s1_df, s2_df):
     returns_2 = s2_df['Close'].pct_change().dropna()
     common_index = returns_1.index.intersection(returns_2.index)
     return returns_1.loc[common_index].corr(returns_2.loc[common_index])
-    # return 
 
 def get_covariance(s1_df, s2_df):
     """
@@ -61,6 +59,3 @@ def get_votatility(stock_df):
     """
     daily_returns = stock_df['Close'].pct_change().dropna()
     return daily_returns.std()
-
-# aapl_avg_return = get_return(AAPL)
-# print(f"AAPL Average Daily Return: {aapl_avg_return:.2%}")

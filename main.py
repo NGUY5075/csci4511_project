@@ -1,41 +1,39 @@
 # import numpy as np
 from functions import *
-# stocks_list = ['AAPL', 'GOOG', 'MSFT', 'AMZN']
-# company_name = ["APPLE", "GOOGLE", "MICROSOFT", "AMAZON"]
-# n = len(stocks_list)
-# budget = 1000000
 
-# For testing purposes
+# ---------------------------FOR TESTING PURPOSES ONLY------------------------
+
 # For time stamps
 from datetime import datetime
-
-# The tech stocks we'll use for this analysis
-# tech_list = ['AAPL', 'GOOG', 'MSFT', 'AMZN']
-
-# Set up End and Start times for data grab
-# tech_list = ['AAPL', 'GOOG', 'MSFT', 'AMZN']
-
+# Set up End and Start times for data grab, starts from 1 year ago to today
 end = datetime.now()
 start = datetime(end.year - 1, end.month, end.day)
     
-
+# The stocks we'll use for this analysis
 company_list = ['AAPL', 'GOOG', 'MSFT', 'AMZN']
-company_name = ["APPLE", "GOOGLE", "MICROSOFT", "AMAZON"]
-# company_list = ['AAPL']
-# company_name = ["APPLE"]
+n = len(company_list)
+budget = 1000000
 
+# Download the data from Yahoo Finance
 for stock in company_list:
     globals()[stock] = yf.download(stock, start, end)
-    # print(globals()[stock])
 
-for company, com_name in zip(company_list, company_name):
-    globals()[company]["company_name"] = com_name
-    globals()[company].to_csv(f"{company}.csv")
-    print(get_return(globals()[company]))
-    print(get_votatility(globals()[company]))
+# Gather data for each stock and write to CSV
+stocks_return_string = "Average Daily Return of Stocks\n"
+stocks_stdev_string = "Standard Deviation of Stocks' Return\n"
+for company in company_list:
+    # globals()[company]["company_name"] = com_name
+    # globals()[company].to_csv(f"{company}.csv")
+    stocks_return_string += get_return(globals()[company]).to_string().split("\n")[1] + "\n"
+    stocks_stdev_string += get_votatility(globals()[company]).to_string().split("\n")[1] + "\n"
+
+with open("returns.csv", "w") as f:
+    f.write(stocks_return_string)
+with open("stdev.csv", "w") as f:
+    f.write(stocks_stdev_string)
 
 
-# Real thing starts here
+# ----------------------------REAL CODE---------------------------------
 # # A: Risk aversion coefficient in Modern Portfolio Theory (MPT)
 # # --------------------------------------------------------------
 # # This scalar represents the investor's tolerance for risk:
