@@ -25,54 +25,30 @@ from pandas_datareader.data import DataReader
 import yfinance as yf
 from pandas_datareader import data as pdr
 
-# yf.pdr_override()
-
-# For time stamps
-from datetime import datetime
-
-
-# The tech stocks we'll use for this analysis
-tech_list = ['AAPL', 'GOOG', 'MSFT', 'AMZN']
-
-# Set up End and Start times for data grab
-tech_list = ['AAPL', 'GOOG', 'MSFT', 'AMZN']
-
-end = datetime.now()
-start = datetime(end.year - 1, end.month, end.day)
-
-for stock in tech_list:
-    globals()[stock] = yf.download(stock, start, end)
-    
-
-company_list = ['AAPL', 'GOOG', 'MSFT', 'AMZN']
-company_name = ["APPLE", "GOOGLE", "MICROSOFT", "AMAZON"]
-
-for company, com_name in zip(company_list, company_name):
-    globals()[company]["company_name"] = com_name
-    
-# df = pd.concat(company_list, axis=0)
-df = pd.concat([globals()[ticker] for ticker in company_list], axis=0)
-df.tail(1)
-print(df.tail())
-
-# AAPL.describe()
-
-def get_return():
+def get_return(stock_df):
     """
     Function to calculate the daily return of a stock
     """
+    daily_returns = stock_df['Close'].pct_change().dropna()
+    avg_return = daily_returns.mean()
+    return avg_return
+    # return globals()[stock]['Adj Close'].pct_change()
 
-def get_correlation():
+def get_correlation(s1, s2):
     """
     Function to calculate the correlation of the return of two stocks
     """
+    # return 
 
-def get_covariance():
+def get_covariance(s1, s2):
     """
     Function to calculate the covariance of the return of two stocks
     """
 
-def get_votatility():
+def get_votatility(s):
     """
     Function to calculate the volatility of a stock measured by the standard deviation of the daily return
     """
+
+# aapl_avg_return = get_return(AAPL)
+# print(f"AAPL Average Daily Return: {aapl_avg_return:.2%}")
