@@ -32,6 +32,7 @@ for company, com_name in zip(company_list, company_name):
     globals()[company]["company_name"] = com_name
     globals()[company].to_csv(f"{company}.csv")
     print(get_return(globals()[company]))
+    print(get_votatility(globals()[company]))
 
 
 # Real thing starts here
