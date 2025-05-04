@@ -1,4 +1,5 @@
 from functions import *
+import matplotlib.pyplot as plt
 
 # For time stamps
 from datetime import datetime
@@ -8,6 +9,7 @@ start = datetime(end.year - 3, end.month, end.day)
     
 # The stocks we'll use for this analysis
 company_list = ['AAPL', 'GOOG', 'MSFT', 'AMZN', 'TSLA', 'NFLX', 'META', 'NVDA', 'AMD', 'INTC']
+# Larger list of stocks for a more comprehensive analysis
 # company_list = [
 #     'AAPL', 'MSFT', 'GOOG', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA', 'PEP', 'COST',
 #     'CSCO', 'AVGO', 'ADBE', 'CMCSA', 'TXN', 'INTC', 'QCOM', 'AMD', 'AMGN', 'INTU',
@@ -20,7 +22,7 @@ company_list = ['AAPL', 'GOOG', 'MSFT', 'AMZN', 'TSLA', 'NFLX', 'META', 'NVDA', 
 #     'PANW', 'FTNT', 'DDOG', 'PLTR', 'ABNB', 'ROKU', 'BKR', 'CEG', 'HON', 'GEHC',
 #     'AXON', 'MELI', 'PDD', 'GFS', 'ON', 'ODFL', 'CSGP', 'CPRT', 'WBD', 'KDP'
 # ]
-# n = len(company_list)
+n = len(company_list)
 budget = 10000000
 
 # A: Risk aversion coefficient in Modern Portfolio Theory (MPT)
@@ -29,7 +31,7 @@ budget = 10000000
 # - A lower A (e.g., 1) indicates an aggressive investor who accepts high risk for higher returns.
 # - A moderate A (e.g., 3) reflects balanced risk and return preferences.
 # - A higher A (e.g., 5 or more) indicates a conservative investor who strongly dislikes risk.
-A = 1
+A = 10
 
 stock_return_map = {}
 stock_stdev_map = {}
@@ -55,8 +57,6 @@ cov_dict = M.to_dict()
 # print(stock_return_map)
 # print(stock_stdev_map)
 # print(cov_dict)
-
-n = len(company_list)
 
 # Write the data to CSV files
 with open("returns.csv", "w") as f:
@@ -140,3 +140,26 @@ output += f"Minimum Variance Portfolio Volatility (daily) %: {round(float(minvar
 
 with open("out.csv", "w") as f:
     f.write(output)
+
+# Extract allocation values for both portfolios
+meanvar_allocations = [float(x[i]) * budget for i in range(n)]
+minvar_allocations = [float(minvar_weights[i]) * budget for i in range(n)]
+
+# Set position for bars
+indices = np.arange(n)
+bar_width = 0.35
+
+# Plotting
+plt.figure(figsize=(round(1.4*n), 10))
+plt.bar(indices, meanvar_allocations, bar_width, label='Mean-Variance Optimal')
+plt.bar(indices + bar_width, minvar_allocations, bar_width, label='Minimum Variance')
+
+# Labels and Titles
+plt.xlabel('Stock')
+plt.ylabel('Investment Amount ($)')
+plt.title('Portfolio Allocations Comparison')
+plt.xticks(indices + bar_width / 2, company_list, rotation=45)
+plt.legend()
+plt.tight_layout()
+# Save plot
+plt.savefig('portfolio_comparison.png')
