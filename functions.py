@@ -28,6 +28,8 @@ def get_return(stock_df):
 def get_votatility(stock_df):
     """
     Function to calculate the volatility of a stock measured by the standard deviation of the daily return
+    Input: Stock DataFrame
+    Output: Standard Deviation of Return
     """
     daily_returns = stock_df['Close'].pct_change().dropna()
     return daily_returns.std()
