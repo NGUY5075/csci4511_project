@@ -4,10 +4,22 @@ from functions import *
 from datetime import datetime
 # Set up End and Start times for data grab, starts from 1 year ago to today
 end = datetime.now()
-start = datetime(end.year - 1, end.month, end.day)
+start = datetime(end.year - 10, end.month, end.day)
     
 # The stocks we'll use for this analysis
 company_list = ['AAPL', 'GOOG', 'MSFT', 'AMZN', 'TSLA', 'NFLX', 'META', 'NVDA', 'AMD', 'INTC']
+# company_list = [
+#     'AAPL', 'MSFT', 'GOOG', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA', 'PEP', 'COST',
+#     'CSCO', 'AVGO', 'ADBE', 'CMCSA', 'TXN', 'INTC', 'QCOM', 'AMD', 'AMGN', 'INTU',
+#     'NFLX', 'PYPL', 'SBUX', 'BKNG', 'MDLZ', 'ISRG', 'ADI', 'VRTX', 'MU', 'LRCX',
+#     'REGN', 'CSX', 'GILD', 'KLAC', 'BIIB', 'ADP', 'ASML', 'MAR', 'CHTR',
+#     'MCHP', 'MNST', 'EXC', 'CTSH', 'CDNS', 'ILMN', 'ROST', 'EA', 'NXPI', 'IDXX',
+#     'WBA', 'FAST', 'CTAS', 'BIDU', 'WDAY', 'XEL', 'NTES', 'DLTR', 'PCAR',
+#     'PAYX', 'VRSK', 'ALGN', 'EBAY', 'LULU', 'ORLY', 'SIRI', 'TTWO', 'SWKS',
+#     'ULTA', 'TTD', 'JD', 'ZM', 'DOCU', 'ZS', 'SNPS', 'TEAM', 'OKTA', 'CRWD', 'MDB',
+#     'PANW', 'FTNT', 'DDOG', 'PLTR', 'ABNB', 'ROKU', 'BKR', 'CEG', 'HON', 'GEHC',
+#     'AXON', 'MELI', 'PDD', 'GFS', 'ON', 'ODFL', 'CSGP', 'CPRT', 'WBD', 'KDP'
+# ]
 # n = len(company_list)
 budget = 1000000
 
@@ -37,11 +49,6 @@ for company in company_list:
     stock_return_map[company] = float(return_str.split()[1])
     stock_stdev_map[company] = float(stdev_str.split()[1])
 
-# Filter out all the stocks with negative or zero returns
-# positive_companies = []
-# for company in company_list:
-#     if stock_return_map[company] > 0:
-#         positive_companies.append(company)
 M = get_covariance_matrix(company_list, start, end)
 cov_dict = M.to_dict()
 
@@ -49,7 +56,6 @@ cov_dict = M.to_dict()
 # print(stock_stdev_map)
 # print(cov_dict)
 
-# Filter out all the stocks with negative returns
 n = len(company_list)
 
 # Write the data to CSV files
@@ -65,9 +71,6 @@ m = np.zeros((n, n))
 b = np.zeros((n, 1))
 b[n - 1] = 1
 
-# Fill in the last condition which is the sum of weights = 1
-# for i in range(n):
-#     m[n - 1][i] = 1
 for i in range(n):
     b[i] = stock_return_map[company_list[i]]/A
 
