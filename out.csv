@@ -1,14 +1,29 @@
-The optimal amount to invest in the stocks are:
-AAPL: [58224.28836578]
-GOOG: [-169896.91156759]
-MSFT: [686661.17935262]
-AMZN: [-44777.74987043]
-TSLA: [154021.8004026]
-NFLX: [248079.20551326]
-META: [-29311.49754161]
-NVDA: [765126.21316473]
-AMD: [143048.96302174]
-INTC: [-811175.4908411]
+--- Mean-Variance Optimal Portfolio ---
+AAPL: -2640457
+GOOG: -2274782
+MSFT: -3215677
+AMZN: -5624303
+TSLA: -2642413
+NFLX: 21658979
+META: 8032739
+NVDA: 18383549
+AMD: -13160772
+INTC: -8516864
 
-Expected Portfolio Return (daily): [3363.35133454]
-Expected Portfolio Volatility (daily): 0.03416722384542398
+Expected Portfolio Return (daily) %: 1.11
+Expected Portfolio Volatility (daily) %: 7.456
+
+--- Minimum Variance Portfolio ---
+AAPL: 3660523
+GOOG: 2005043
+MSFT: 5536995
+AMZN: -214516
+TSLA: -444179
+NFLX: 1144035
+META: -666089
+NVDA: -1029092
+AMD: -745715
+INTC: 752996
+
+Minimum Variance Portfolio Return (daily) %: 0
+Minimum Variance Portfolio Volatility (daily) %: 1.52

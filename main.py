@@ -4,7 +4,7 @@ from functions import *
 from datetime import datetime
 # Set up End and Start times for data grab, starts from 1 year ago to today
 end = datetime.now()
-start = datetime(end.year - 10, end.month, end.day)
+start = datetime(end.year - 3, end.month, end.day)
     
 # The stocks we'll use for this analysis
 company_list = ['AAPL', 'GOOG', 'MSFT', 'AMZN', 'TSLA', 'NFLX', 'META', 'NVDA', 'AMD', 'INTC']
@@ -21,7 +21,7 @@ company_list = ['AAPL', 'GOOG', 'MSFT', 'AMZN', 'TSLA', 'NFLX', 'META', 'NVDA', 
 #     'AXON', 'MELI', 'PDD', 'GFS', 'ON', 'ODFL', 'CSGP', 'CPRT', 'WBD', 'KDP'
 # ]
 # n = len(company_list)
-budget = 1000000
+budget = 10000000
 
 # A: Risk aversion coefficient in Modern Portfolio Theory (MPT)
 # --------------------------------------------------------------
@@ -82,11 +82,11 @@ for i in range(n):
 # Solve for x
 x = np.linalg.solve(m, b)
 x /= np.sum(x)
-output = "The optimal amount to invest in the stocks are:\n"
+output = "--- Mean-Variance Optimal Portfolio ---\n"
 portfolio_return = 0
 portfolio_volatility = 0
 for i in range(n):
-    output += f"{company_list[i]}: {x[i] * budget}\n"
+    output += f"{company_list[i]}: {round(float(x[i]*budget))}\n"
 with open("out.csv", "w") as f:
     f.write(output)
 
@@ -104,9 +104,39 @@ portfolio_variance = (weights.T @ cov_matrix @ weights)[0, 0]
 portfolio_volatility = np.sqrt(portfolio_variance)
 
 # Append results to output
-output += f"\nExpected Portfolio Return (daily) %: {portfolio_return}\n"
-output += f"Expected Portfolio Volatility (daily) %: {portfolio_volatility}\n"
+output += f"\nExpected Portfolio Return (daily) %: {round(float(portfolio_return * 100), 3)}\n"
+output += f"Expected Portfolio Volatility (daily) %: {round(float(portfolio_volatility * 100), 3)}\n"
 
-# Write final output to file
+# Set up the optimization problem for Minimum Variance Portfolio
+# Constraint: sum of weights = 1
+# We use the method of Lagrange multipliers to solve:
+# Minimize: aᵀ Σ a
+# Subject to: 1ᵀ a = 1
+
+# Construct augmented matrix [Σ 1; 1ᵀ 0]
+aug_m = np.zeros((n + 1, n + 1))
+aug_m[:n, :n] = cov_matrix
+aug_m[:n, n] = 1
+aug_m[n, :n] = 1
+
+# Construct RHS vector [0...0; 1]
+aug_b = np.zeros((n + 1, 1))
+aug_b[n, 0] = 1
+
+# Solve for weights and lagrange multiplier
+aug_solution = np.linalg.solve(aug_m, aug_b)
+minvar_weights = aug_solution[:n].reshape((n, 1))
+
+# Expected portfolio return for minimum variance portfolio
+minvar_portfolio_return = (minvar_weights.T @ np.array([stock_return_map[company] for company in company_list]).reshape((n, 1))).item()
+minvar_portfolio_variance = (minvar_weights.T @ cov_matrix @ minvar_weights).item()
+minvar_portfolio_volatility = np.sqrt(minvar_portfolio_variance)
+
+output += "\n--- Minimum Variance Portfolio ---\n"
+for i in range(n):
+    output += f"{company_list[i]}: {round(minvar_weights[i, 0] * budget)}\n"
+output += f"\nMinimum Variance Portfolio Return (daily) %: {round(float(minvar_portfolio_return*100))}\n"
+output += f"Minimum Variance Portfolio Volatility (daily) %: {round(float(minvar_portfolio_volatility*100),3)}\n"
+
 with open("out.csv", "w") as f:
     f.write(output)
