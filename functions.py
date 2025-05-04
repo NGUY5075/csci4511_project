@@ -32,18 +32,10 @@ def get_votatility(stock_df):
     daily_returns = stock_df['Close'].pct_change().dropna()
     return daily_returns.std()
 
-def get_correlation(s1_df, s2_df):
+def get_covariance_matrix(stock_list, start, end):
     """
-    Function to calculate the correlation of the return of two stocks
+    Returns the covariance matrix of the daily returns of a list of stocks
     """
-    returns_1 = s1_df['Close'].pct_change().dropna()
-    returns_2 = s2_df['Close'].pct_change().dropna()
-    return returns_1.corr(returns_2)
-
-def get_covariance(s1_df, s2_df):
-    """
-    Function to calculate the covariance of the return of two stocks
-    """
-    returns_1 = s1_df['Close'].astype(float).pct_change().dropna()
-    returns_2 = s2_df['Close'].astype(float).pct_change().dropna()
-    return returns_1.cov(returns_2)
+    closing_df = yf.download(stock_list, start=start, end=end)['Close']
+    returns = closing_df.pct_change().dropna()
+    return returns.cov()
