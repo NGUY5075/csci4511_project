@@ -83,7 +83,30 @@ for i in range(n):
 x = np.linalg.solve(m, b)
 x /= np.sum(x)
 output = "The optimal amount to invest in the stocks are:\n"
+portfolio_return = 0
+portfolio_volatility = 0
 for i in range(n):
     output += f"{company_list[i]}: {x[i] * budget}\n"
+with open("out.csv", "w") as f:
+    f.write(output)
+
+# Calculate expected portfolio return
+portfolio_return = sum(x[i] * stock_return_map[company_list[i]] for i in range(n))
+
+# Convert weights to 1D array for matrix multiplication
+weights = np.array(x).reshape((n, 1))
+
+# Convert covariance matrix to numpy array
+cov_matrix = np.array([[cov_dict[company_list[i]][company_list[j]] for j in range(n)] for i in range(n)])
+
+# Calculate portfolio variance and volatility (std)
+portfolio_variance = (weights.T @ cov_matrix @ weights)[0, 0]
+portfolio_volatility = np.sqrt(portfolio_variance)
+
+# Append results to output
+output += f"\nExpected Portfolio Return (daily) %: {portfolio_return}\n"
+output += f"Expected Portfolio Volatility (daily) %: {portfolio_volatility}\n"
+
+# Write final output to file
 with open("out.csv", "w") as f:
     f.write(output)
