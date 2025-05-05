@@ -24,7 +24,7 @@ company_list = ['AAPL', 'GOOG', 'MSFT', 'AMZN', 'TSLA', 'NFLX', 'META', 'NVDA', 
 #     'AXON', 'MELI', 'PDD', 'GFS', 'ON', 'ODFL', 'CSGP', 'CPRT', 'WBD', 'KDP'
 # ]
 n = len(company_list)
-budget = 1000000  # Total budget for the portfolio
+budget = 1  # Total budget for the portfolio
 
 # A: Risk aversion coefficient in Modern Portfolio Theory (MPT)
 # --------------------------------------------------------------
