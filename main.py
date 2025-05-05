@@ -228,3 +228,33 @@ print("Minvar portfolio (shares):", minvar_solution[0])
 print("Minvar variance:", minvar_variance[0])
 
 # Draw the plot
+# Convert share allocations to NumPy arrays for easier manipulation
+meanvar_shares = np.array(meanvar_solution[0])
+minvar_shares = np.array(minvar_solution[0])
+
+# Set up the bar chart parameters
+n = len(company_list)
+indices = np.arange(n)
+bar_width = 0.35
+
+# Create the plot
+plt.figure(figsize=(1.5 * n, 8))
+bars1 = plt.bar(indices, meanvar_shares, bar_width, label='Mean-Variance Optimal', color='blue')
+bars2 = plt.bar(indices + bar_width, minvar_shares, bar_width, label='Minimum Variance', color='red')
+
+# Add labels and title
+plt.xlabel('Stock')
+plt.ylabel('Number of Shares')
+plt.title('Portfolio Share Allocations Comparison')
+plt.xticks(indices + bar_width / 2, company_list, rotation=45)
+plt.legend()
+
+# Annotate bars with share counts
+for bar in bars1 + bars2:
+    height = bar.get_height()
+    plt.text(bar.get_x() + bar.get_width() / 2, height,
+             f'{int(height)}', ha='center', va='bottom', fontsize=9)
+
+plt.tight_layout()
+plt.savefig('portfolio_shares_comparison.png', dpi=300)
+plt.close()
