@@ -142,7 +142,7 @@ aug_b = np.zeros((n + 1, 1))
 aug_b[n, 0] = 1
 
 # Solve for weights and lagrange multiplier
-aug_solution = np.linalg.solve(aug_m, aug_b)
+# aug_solution = np.linalg.solve(aug_m, aug_b)
 aug_solution = solve_min_variance_portfolio(M)
 minvar_weights = aug_solution[:n].reshape((n, 1))
 
@@ -183,13 +183,13 @@ plt.tight_layout()
 # Save plot
 plt.savefig('portfolio_comparison.png')
 
-# Using backtracking to find the optimal portfolio
+# Using backtracking to find the mean variance portfolio
 # --------------------------------------------------------------
 meanvar_allocations = generate_share_options(x, closing_prices, budget)
-print(meanvar_allocations)
+# print(meanvar_allocations)
 
-best_solution = [None]
-best_utility = [-float("inf")]
+meanvar_solution = [None]
+meanvar_utility = [-float("inf")]
 
 backtrack_mean_variance(
     index=0,
@@ -201,10 +201,30 @@ backtrack_mean_variance(
     expected_returns=np.array(list(stock_return_map.values())),
     cov_matrix=cov_matrix,
     A=A,
-    best_solution=best_solution,
-    best_utility=best_utility
+    best_solution=meanvar_solution,
+    best_utility=meanvar_utility
+)
+
+# Using backtrack to find the minimum variance portfolio
+minvar_allocations = generate_share_options(aug_solution, closing_prices, budget)
+minvar_solution = [None]
+minvar_variance = [float("inf")]
+backtrack_min_variance(
+    index=0,
+    current_combo=[],
+    current_cost=0,
+    budget=budget,
+    options=minvar_allocations,
+    stock_prices=np.array(list(stock_recent_price_map.values())),
+    cov_matrix=cov_matrix,
+    best_solution=minvar_solution,
+    best_variance=minvar_variance
 )
 
 # Access result:
-print("Best portfolio (shares):", best_solution[0])
-print("Best utility:", best_utility[0])
+print("Meanvar portfolio (shares):", meanvar_solution[0])
+print("Meanvar utility:", meanvar_utility[0])
+print("Minvar portfolio (shares):", minvar_solution[0])
+print("Minvar variance:", minvar_variance[0])
+
+# Draw the plot
