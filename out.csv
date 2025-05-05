@@ -1,29 +1,29 @@
 --- Mean-Variance Optimal Portfolio ---
-AAPL: -2640451
-GOOG: -2274803
-MSFT: -3215672
-AMZN: -5624291
-TSLA: -2642420
-NFLX: 21658987
-META: 8032735
-NVDA: 18383567
-AMD: -13160774
-INTC: -8516877
+AAPL: 9978
+GOOG: 0
+MSFT: 0
+AMZN: 0
+TSLA: 37299
+NFLX: 253755
+META: 460336
+NVDA: 238633
+AMD: 0
+INTC: 0
 
-Expected Portfolio Return (daily) %: 1.11
-Expected Portfolio Volatility (daily) %: 7.456
+Expected Portfolio Return (daily) %: 0.181
+Expected Portfolio Volatility (daily) %: 2.178
 
 --- Minimum Variance Portfolio ---
-AAPL: 3660526
-GOOG: 2005046
-MSFT: 5536991
-AMZN: -214517
-TSLA: -444179
-NFLX: 1144036
-META: -666090
-NVDA: -1029092
-AMD: -745717
-INTC: 752995
+AAPL: 134714
+GOOG: 0
+MSFT: 0
+AMZN: 201185
+TSLA: 0
+NFLX: 0
+META: 470557
+NVDA: 193545
+AMD: 0
+INTC: 0
 
 Minimum Variance Portfolio Return (daily) %: 0
-Minimum Variance Portfolio Volatility (daily) %: 1.52
+Minimum Variance Portfolio Volatility (daily) %: 2.104

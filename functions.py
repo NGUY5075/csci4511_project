@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import cvxpy as cp
 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -34,6 +35,14 @@ def get_votatility(stock_df):
     daily_returns = stock_df['Close'].pct_change().dropna()
     return daily_returns.std()
 
+def get_closing_price(stock_df):
+    """
+    Function to get the most recent closing price of a stock
+    Input: Stock DataFrame
+    Output: Closing Price DataFrame
+    """
+    return stock_df['Close'].tail(1)
+
 def get_covariance_matrix(stock_list, start, end):
     """
     Returns the covariance matrix of the daily returns of a list of stocks
@@ -41,3 +50,42 @@ def get_covariance_matrix(stock_list, start, end):
     closing_df = yf.download(stock_list, start=start, end=end)['Close']
     returns = closing_df.pct_change().dropna()
     return returns.cov()
+
+def solve_mpt_constrained(expected_returns, cov_matrix, A):
+    n = len(expected_returns)
+    x = cp.Variable(n)
+    # Objective: maximize mean-variance utility
+    objective = cp.Maximize(x @ expected_returns - A * cp.quad_form(x, cov_matrix))
+    # Constraints: weights sum to 1, no short-selling
+    constraints = [
+        cp.sum(x) == 1,
+        x >= 0
+    ]
+    # Problem
+    prob = cp.Problem(objective, constraints)
+    prob.solve()
+    return x.value
+
+def solve_min_variance_portfolio(cov_matrix):
+    """
+    Solves for the minimum variance portfolio weights with no short-selling.
+
+    Parameters:
+    cov_matrix (numpy.ndarray): The covariance matrix of asset returns.
+
+    Returns:
+    numpy.ndarray: Optimal asset weights minimizing portfolio variance.
+    """
+    n = cov_matrix.shape[0]
+    w = cp.Variable(n)
+    # Objective: Minimize portfolio variance
+    objective = cp.Minimize(cp.quad_form(w, cov_matrix))
+    # Constraints: weights sum to 1, no short-selling
+    constraints = [
+        cp.sum(w) == 1,
+        w >= 0
+    ]
+    # Problem
+    prob = cp.Problem(objective, constraints)
+    prob.solve()
+    return w.value

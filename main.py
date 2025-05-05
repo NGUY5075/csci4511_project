@@ -1,11 +1,12 @@
 from functions import *
+from search import *
 import matplotlib.pyplot as plt
 
 # For time stamps
 from datetime import datetime
 # Set up End and Start times for data grab, starts from 1 year ago to today
 end = datetime.now()
-start = datetime(end.year - 3, end.month, end.day)
+start = datetime(end.year - 1, end.month, end.day)
     
 # The stocks we'll use for this analysis
 company_list = ['AAPL', 'GOOG', 'MSFT', 'AMZN', 'TSLA', 'NFLX', 'META', 'NVDA', 'AMD', 'INTC']
@@ -23,7 +24,7 @@ company_list = ['AAPL', 'GOOG', 'MSFT', 'AMZN', 'TSLA', 'NFLX', 'META', 'NVDA', 
 #     'AXON', 'MELI', 'PDD', 'GFS', 'ON', 'ODFL', 'CSGP', 'CPRT', 'WBD', 'KDP'
 # ]
 n = len(company_list)
-budget = 10000000
+budget = 1000000  # Total budget for the portfolio
 
 # A: Risk aversion coefficient in Modern Portfolio Theory (MPT)
 # --------------------------------------------------------------
@@ -35,6 +36,7 @@ A = 10
 
 stock_return_map = {}
 stock_stdev_map = {}
+stock_recent_price_map = {}
 
 # Download the data from Yahoo Finance
 for stock in company_list:
@@ -43,13 +45,24 @@ for stock in company_list:
 # Gather data for each stock and write to CSV
 stocks_return_string = "Average Daily Return of Stocks\n"
 stocks_stdev_string = "Standard Deviation of Stocks' Return\n"
+stocks_price_string = "Most recent closing price of Stocks\n"
+closing_prices = []
 for company in company_list:
     return_str = get_return(globals()[company]).to_string().split("\n")[1]
     stdev_str = get_votatility(globals()[company]).to_string().split("\n")[1]
+    price_str = get_closing_price(globals()[company]).to_string().split("\n")[2]
+    # print(price_str)
+    # print(price_str.split()[1])
+    # price_str = get_closing_price(globals()[company]).to_string().split("\n")[1]
     stocks_return_string += return_str + "\n"
     stocks_stdev_string += stdev_str + "\n"
+    stocks_price_string += company + ": " + price_str.split()[1] + "\n"
+    # stocks_price_string += price_str + "\n"
     stock_return_map[company] = float(return_str.split()[1])
     stock_stdev_map[company] = float(stdev_str.split()[1])
+    stock_recent_price_map[company] = float(price_str.split()[1])
+    closing_prices.append(float(price_str.split()[1]))
+    # stock_recent_price_map[company] = float(price_str.split()[1])
 
 M = get_covariance_matrix(company_list, start, end)
 cov_dict = M.to_dict()
@@ -65,6 +78,8 @@ with open("stdev.csv", "w") as f:
     f.write(stocks_stdev_string)
 with open("cov.csv", "w") as f:
     f.write(M.to_string())
+with open("price.csv", "w") as f:
+    f.write(stocks_price_string)
 
 # Set up the optimization problem
 m = np.zeros((n, n))
@@ -80,11 +95,14 @@ for i in range(n):
         m[i][j] = cov_dict[company_list[i]][company_list[j]]
 
 # Solve for x
-x = np.linalg.solve(m, b)
-x /= np.sum(x)
+expected_returns = np.array(list(stock_return_map.values()))
+x = solve_mpt_constrained(expected_returns, M, A)
+# x = np.linalg.solve(m, b)
+# x /= np.sum(x)
 output = "--- Mean-Variance Optimal Portfolio ---\n"
 portfolio_return = 0
 portfolio_volatility = 0
+
 for i in range(n):
     output += f"{company_list[i]}: {round(float(x[i]*budget))}\n"
 with open("out.csv", "w") as f:
@@ -125,6 +143,7 @@ aug_b[n, 0] = 1
 
 # Solve for weights and lagrange multiplier
 aug_solution = np.linalg.solve(aug_m, aug_b)
+aug_solution = solve_min_variance_portfolio(M)
 minvar_weights = aug_solution[:n].reshape((n, 1))
 
 # Expected portfolio return for minimum variance portfolio
@@ -163,3 +182,29 @@ plt.legend()
 plt.tight_layout()
 # Save plot
 plt.savefig('portfolio_comparison.png')
+
+# Using backtracking to find the optimal portfolio
+# --------------------------------------------------------------
+meanvar_allocations = generate_share_options(x, closing_prices, budget)
+print(meanvar_allocations)
+
+best_solution = [None]
+best_utility = [-float("inf")]
+
+backtrack_mean_variance(
+    index=0,
+    current_combo=[],
+    current_cost=0,
+    budget=budget,
+    options=meanvar_allocations,
+    stock_prices=np.array(list(stock_recent_price_map.values())),
+    expected_returns=np.array(list(stock_return_map.values())),
+    cov_matrix=cov_matrix,
+    A=A,
+    best_solution=best_solution,
+    best_utility=best_utility
+)
+
+# Access result:
+print("Best portfolio (shares):", best_solution[0])
+print("Best utility:", best_utility[0])
