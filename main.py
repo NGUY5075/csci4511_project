@@ -97,8 +97,6 @@ for i in range(n):
 # Solve for x
 expected_returns = np.array(list(stock_return_map.values()))
 x = solve_mpt_constrained(expected_returns, M, A)
-# x = np.linalg.solve(m, b)
-# x /= np.sum(x)
 output = "--- Mean-Variance Optimal Portfolio ---\n"
 portfolio_return = 0
 portfolio_volatility = 0
@@ -126,23 +124,6 @@ output += f"\nExpected Portfolio Return (daily) %: {round(float(portfolio_return
 output += f"Expected Portfolio Volatility (daily) %: {round(float(portfolio_volatility * 100), 3)}\n"
 
 # Set up the optimization problem for Minimum Variance Portfolio
-# Constraint: sum of weights = 1
-# We use the method of Lagrange multipliers to solve:
-# Minimize: aᵀ Σ a
-# Subject to: 1ᵀ a = 1
-
-# Construct augmented matrix [Σ 1; 1ᵀ 0]
-aug_m = np.zeros((n + 1, n + 1))
-aug_m[:n, :n] = cov_matrix
-aug_m[:n, n] = 1
-aug_m[n, :n] = 1
-
-# Construct RHS vector [0...0; 1]
-aug_b = np.zeros((n + 1, 1))
-aug_b[n, 0] = 1
-
-# Solve for weights and lagrange multiplier
-# aug_solution = np.linalg.solve(aug_m, aug_b)
 aug_solution = solve_min_variance_portfolio(M)
 minvar_weights = aug_solution[:n].reshape((n, 1))
 
@@ -157,8 +138,8 @@ for i in range(n):
 output += f"\nMinimum Variance Portfolio Return (daily) %: {round(float(minvar_portfolio_return*100))}\n"
 output += f"Minimum Variance Portfolio Volatility (daily) %: {round(float(minvar_portfolio_volatility*100),3)}\n"
 
-with open("out.csv", "w") as f:
-    f.write(output)
+# with open("out.csv", "w") as f:
+#     f.write(output)
 
 # Extract allocation values for both portfolios
 meanvar_allocations = [float(x[i]) * budget for i in range(n)]
@@ -222,10 +203,13 @@ backtrack_min_variance(
 )
 
 # Access result:
-print("Meanvar portfolio (shares):", meanvar_solution[0])
-print("Meanvar utility:", meanvar_utility[0])
-print("Minvar portfolio (shares):", minvar_solution[0])
-print("Minvar variance:", minvar_variance[0])
+output += "\n--- Backtracking Results ---\n"
+output += f"Meanvar portfolio (shares): {meanvar_solution[0]}\n"
+output += f"Meanvar utility: {meanvar_utility[0]}\n"
+output += f"Minvar portfolio (shares): {minvar_solution[0]}\n"
+output += f"Minvar variance: {minvar_variance[0]}\n"
+with open("out.csv", "w") as f:
+    f.write(output)
 
 # Draw the plot
 # Convert share allocations to NumPy arrays for easier manipulation

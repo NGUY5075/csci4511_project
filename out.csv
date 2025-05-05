@@ -3,9 +3,9 @@ AAPL: 9978
 GOOG: 0
 MSFT: 0
 AMZN: 0
-TSLA: 37299
+TSLA: 37298
 NFLX: 253755
-META: 460335
+META: 460336
 NVDA: 238633
 AMD: 0
 INTC: 0
@@ -27,3 +27,9 @@ INTC: 0
 
 Minimum Variance Portfolio Return (daily) %: 0
 Minimum Variance Portfolio Volatility (daily) %: 2.104
+
+--- Backtracking Results ---
+Meanvar portfolio (shares): [49, 1, 0, 0, 129, 219, 771, 2084, 0, 0]
+Meanvar utility: -0.002939880930717686
+Minvar portfolio (shares): [657, 0, 0, 1058, 0, 0, 788, 1690, 0, 1]
+Minvar variance: 0.0004428057050570228
