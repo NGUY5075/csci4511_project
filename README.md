@@ -63,3 +63,5 @@ python main.py
 - out.csv: Summary of portfolio returns, risks, and share allocations
 - portfolio_comparison.png: Bar plot of investment dollars
 - portfolio_shares_comparison.png: Bar plot of actual shares to buy
+
+> This coding section was developed with the assistance of OpenAI's ChatGPT, which provided support in code structuring, optimization logic, and documentation writing.
